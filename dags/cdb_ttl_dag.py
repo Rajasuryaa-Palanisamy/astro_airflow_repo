@@ -35,9 +35,9 @@ def get_policies(ds=None):
 FROM information_schema.table_partitions p
 JOIN doc.retention_policies r ON p.table_schema = r.table_schema
   AND p.table_name = r.table_name
-  AND p.values[r.partition_column] < '2023-10-27'::TIMESTAMP - (r.retention_period || ' days')::INTERVAL
-WHERE r.strategy = 'delete'; """
-       # parameters={"day": ds},
+  AND p.values[r.partition_column] < %(day)s::TIMESTAMP - (r.retention_period || ' days')::INTERVAL
+WHERE r.strategy = 'delete'; """,
+       parameters={"day": ds},
     )
 
 
