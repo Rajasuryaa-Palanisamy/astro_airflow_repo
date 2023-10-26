@@ -22,7 +22,7 @@ def get_policies():
             task_id="test_cdb_connection",
             conn_id="cratedb_connection",
             sql="""
-                    select count(*) from keywords_partitioned;
+                    INSERT INTO retention_policies (table_schema, table_name, partition_column, retention_period, strategy) VALUES ('doc', 'test_insert', 'ts_day', 1, 'delete');
                 """)
 @dag(
     start_date=pendulum.datetime(2021, 11, 19, tz="UTC"),
