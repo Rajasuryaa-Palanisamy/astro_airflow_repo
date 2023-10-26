@@ -19,7 +19,7 @@ from airflow.operators.empty import EmptyOperator
 @task
 def get_policies():
    SQLExecuteQueryOperator(
-            task_id="test cdb connection",
+            task_id="test_cdb_connection",
             conn_id="cratedb_connection",
             sql="""
                     select count(*) from keywords_partitioned;
