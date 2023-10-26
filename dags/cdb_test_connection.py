@@ -18,6 +18,7 @@ from airflow.operators.empty import EmptyOperator
 
 @task
 def get_policies():
+   print("entered sql query op function")
    SQLExecuteQueryOperator(
             task_id="test_cdb_connection",
             conn_id="cratedb_connection",
