@@ -12,6 +12,7 @@ from airflow.decorators import dag, task
     catchup=False,
 )
 
+@task
 def ttl_delete_test():
     SQLExecuteQueryOperator.partial(
         task_id="delete_partition",
