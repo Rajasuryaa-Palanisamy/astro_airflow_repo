@@ -17,8 +17,7 @@ def ttl_delete_test():
         task_id="delete_partition",
         conn_id="cratedb_connection",
         sql="DELETE from keywords_random_ip_ttl_test_min WHERE TIMESTAMP > 1699170005565;",
-    ).expand(params=get_policies().map(map_policy))
+    )
 
 
 ttl_delete_test()
-
