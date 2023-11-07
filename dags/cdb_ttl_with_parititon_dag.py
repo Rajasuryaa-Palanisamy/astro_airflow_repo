@@ -13,7 +13,7 @@ def get_policies():
             task_id="test_cdb_connection",
             conn_id="cratedb_connection",
             sql="""
-                    DELETE from keywords_paritioned_ttl_test_2_data_new WHERE TIMESTAMP < 1699288677285;
+                    DELETE from keywords_paritioned_ttl_test_2_data_new WHERE ts_day < '1699315200000' ;
                 """)
 @dag(
     start_date=pendulum.datetime(2022, 11, 19, tz="UTC"),
