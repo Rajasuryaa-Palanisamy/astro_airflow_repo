@@ -17,8 +17,8 @@ default_args = {
     'email_on_retry': False,
     'retries': 1,
     'retry_delay': timedelta(minutes=1),
-    "container_name": "test-container-1", 
-    "blob_name": "teams error image",
+    # "container_name": "test-container-1", 
+    # "blob_name": "teams error image",
 }
 
 # Define the DAG
@@ -37,7 +37,9 @@ start = DummyOperator(task_id="start")
 transfer_files_to_gcs = AzureBlobStorageToGCSOperator(
     task_id="transfer_files_to_gcs",
     # AZURE arg
-    file_path='teams_error_image_new.png',
+    container_name = 'test-container-1',
+    blob_name = 'teams error image',
+    #file_path='teams_error_image_new.png',
     # GCP args
     bucket_name='mssql-bq-acc',
     object_name='teams_error_image_new.png',
