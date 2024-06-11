@@ -45,7 +45,7 @@ transfer_files_to_gcs = AzureBlobStorageToGCSOperator(
     object_name='teams_error_image_new.png',
     filename='gs://mssql-bq-acc/zip_us_poc',
     gzip=False,
-    delegate_to=None,
+    #delegate_to=None,
     impersonation_chain=None,
 )
 
