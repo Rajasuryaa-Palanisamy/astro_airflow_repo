@@ -30,7 +30,6 @@ with models.DAG(
     schedule_interval=timedelta(days=1),
     start_date=datetime(2023, 1, 1),
     catchup=False,
-    default_args=default_args,
 ) as dag:
     
 
