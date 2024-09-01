@@ -64,7 +64,7 @@ def dataflow_job(source_table_name, src_table_cdc_column_name):
     MAX_DATE = Variable.get('v_src_recurly2bqraw_{}_max_{}'.format(source_table_name,src_table_cdc_column_name))
 
     run_df_job = BeamRunPythonPipelineOperator(
-        task_id='run_beam_python_pipeline',
+        task_id='run-beam-python-pipeline',
         runner=BeamRunnerType.DataflowRunner,
         #py_file='/home/airflow/gcs/dags/aira_accounts_bq_raw_df.py',  # Path to your Apache Beam Python script
         py_file ='gs://mssql-bq-acc/recurly_accounts_to_bq_df.py',
