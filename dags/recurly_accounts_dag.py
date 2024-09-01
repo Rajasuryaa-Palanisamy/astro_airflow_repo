@@ -24,6 +24,7 @@ import pandas as pd
 import numpy as np
 from airflow.utils.email import send_email
 from airflow.providers.apache.beam.operators.beam import BeamRunPythonPipelineOperator
+from airflow.providers.apache.beam.hooks.beam import BeamRunnerType
 #from airflow.providers.apache.beam.operators.beam import BeamRunPythonPipelineOperator
 from airflow.providers.google.cloud.operators.bigquery import BigQueryInsertJobOperator
 
@@ -64,8 +65,9 @@ def dataflow_job(source_table_name, src_table_cdc_column_name):
 
     run_df_job = BeamRunPythonPipelineOperator(
         task_id='run_beam_python_pipeline',
+        runner=BeamRunnerType.DataflowRunner,
         #py_file='/home/airflow/gcs/dags/aira_accounts_bq_raw_df.py',  # Path to your Apache Beam Python script
-        py_file ='/Users/rajasuryaapalanisamy/astro-project/dags/recurly_accounts_to_bq_df.py',
+        py_file ='gs://mssql-bq-acc/recurly_accounts_to_bq_df.py',
         pipeline_options={
             'my_variable': MAX_DATE  # Pass the variable as a pipeline option
         },
