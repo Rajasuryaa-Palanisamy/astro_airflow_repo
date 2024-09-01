@@ -24,6 +24,7 @@ import pandas as pd
 import numpy as np
 from airflow.utils.email import send_email
 from airflow.providers.apache.beam.operators.beam import BeamRunPythonPipelineOperator
+#from airflow.providers.apache.beam.operators.beam import BeamRunPythonPipelineOperator
 from airflow.providers.google.cloud.operators.bigquery import BigQueryInsertJobOperator
 
 now = datetime.now()
@@ -135,3 +136,5 @@ with models.DAG(
     tsk_aira_bq_set_max_date_account = PythonOperator(task_id="set_max_date_account",python_callable=set_max_date,op_kwargs={'project_id':PROJECT_ID,'dataset':DATASET_RAW,'bigquery_table_name':'accounts','bq_table_cdc_column_name':"updated_at",'dag':dag},provide_context=True,trigger_rule = 'all_done',dag=dag)
 
     tsk_aira_src_recurly2bqraw_dataload_end = DummyOperator(task_id="aira_src_recurly2bqraw_dataload_end",trigger_rule="all_success")
+
+    tsk_aira_src_recurly2bqraw_dataload_start >> tsk_aira_dfj_src_recurly2bqraw >> tsk_aira_bqcur_upsert_table >> tsk_aira_bq_set_max_date_account >> tsk_aira_src_recurly2bqraw_dataload_end
