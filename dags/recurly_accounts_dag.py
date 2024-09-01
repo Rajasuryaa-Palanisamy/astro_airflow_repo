@@ -72,7 +72,7 @@ def dataflow_job(source_table_name, src_table_cdc_column_name):
         py_options=[],
         py_interpreter='python3',
         py_requirements=[],
-        py_system_site_packages=False,
+        py_system_site_packages=True,
     )
     return run_df_job
 
