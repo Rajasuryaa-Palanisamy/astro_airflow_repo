@@ -70,12 +70,12 @@ def dataflow_job(source_table_name, src_table_cdc_column_name):
         py_file ='gs://mssql-bq-acc/recurly_accounts_to_bq_df.py',
         pipeline_options={
             'my_variable': MAX_DATE,
-            'job_name': 'recurly-to-bq-test',  # Pass the variable as a pipeline option
+            #'job_name': 'recurly-to-bq-test',  # Pass the variable as a pipeline option
         },
         py_options=[],
         py_interpreter='python3',
-        py_requirements=[],
-        py_system_site_packages=True,
+        py_requirements=['apache-beam[gcp]','google-cloud-storage','recurly','pandas'],
+        py_system_site_packages=False,
     )
     return run_df_job
 
