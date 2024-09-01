@@ -69,7 +69,8 @@ def dataflow_job(source_table_name, src_table_cdc_column_name):
         #py_file='/home/airflow/gcs/dags/aira_accounts_bq_raw_df.py',  # Path to your Apache Beam Python script
         py_file ='gs://mssql-bq-acc/recurly_accounts_to_bq_df.py',
         pipeline_options={
-            'my_variable': MAX_DATE  # Pass the variable as a pipeline option
+            'my_variable': MAX_DATE,
+            'job_name': 'recurly-to-bq-test',  # Pass the variable as a pipeline option
         },
         py_options=[],
         py_interpreter='python3',
