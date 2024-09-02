@@ -66,7 +66,7 @@ def dataflow_job(source_table_name, src_table_cdc_column_name):
     run_df_job = BashOperator(
     task_id='aira_dfj_recurly2bqraw_accounts',
     #$AIRFLOW_HOME/include/my_bash_script.sh
-    bash_command='python3 $AIRFLOW_HOME/include/recurly_to_bq_accounts_df.py {}'.format(max_date) ,
+    bash_command='python3 $AIRFLOW_HOME/include/recurly_to_bq_accounts_df.py "{}"'.format(max_date) ,
     dag=dag
     )
     return run_df_job

@@ -96,7 +96,7 @@ def run():
         max_num_workers=2,  
         service_account_email="recurly-sa@searce-dna-ps1-delivery.iam.gserviceaccount.com",
         #subnetwork="regions/us-west1/subnetworks/gfg-pvt-us-wt1subnet",
-        requirements_file= "/Users/rajasuryaapalanisamy/astro-project/include/requirements.txt"
+        requirements_file= "/Users/rajasuryaapalanisamy/astro-project/dags/requirements.txt"
     )
 
     # BigQuery table schema
