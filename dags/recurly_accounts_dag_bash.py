@@ -51,6 +51,11 @@ def set_max_date(dag,project_id,dataset,bigquery_table_name, bq_table_cdc_column
     results = query_job.to_dataframe()
     max_date = results.iloc[0, 0]
     max_date = str(max_date)
+    #print(max_date)
+    # Convert the string to a datetime object
+    dt = datetime.fromisoformat(max_date)
+    # Convert the datetime object to the desired format
+    max_date = dt.strftime('%Y-%m-%dT%H:%M:%SZ')
     print(max_date)
     if(max_date == "" or max_date == "None" or max_date=="NaT"): 
         max_date =  Variable.get('v_src_recurly2bqraw_{}_max_{}'.format(bigquery_table_name, bq_table_cdc_column_name )) 
