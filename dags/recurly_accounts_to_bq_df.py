@@ -6,7 +6,7 @@ import time
 import logging
 from datetime import datetime
 import argparse
-
+import sys
 
 # Custom serialization function to convert custom objects to JSON-serializable dicts
 def serialize(obj):
@@ -71,25 +71,17 @@ def fetch_all_accounts(client,my_variable):
 
 # Define the DoFn to fetch and process the data
 class FetchAccountsDoFn(beam.DoFn):
-    def process(self, my_variable):
-        print("my_variable : ",my_variable)
+    def process(self, element):
+        print("my_variable : ",sys.argv[1])
         # Assume client is initialized and available globally
-        accounts_data = fetch_all_accounts(client,my_variable)
+        accounts_data = fetch_all_accounts(client,sys.argv[1])
         for account in accounts_data:
             # print(account)
             # print(type(account))
             yield account
             
 
-def run(argv=None):
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--my_variable', type=str, help='A variable passed from Airflow DAG')
-    args, beam_args = parser.parse_known_args(argv)
-
-    # Use the variable in your Beam pipeline
-    my_variable = args.my_variable
-    print(f"Received variable: {my_variable}")
+def run():
 
     # Initialize the pipeline options
     options = PipelineOptions(
@@ -142,7 +134,7 @@ def run(argv=None):
         (
             p
             | 'Start' >> beam.Create([None])  # Dummy element to initiate the pipeline
-            | 'FetchAccounts' >> beam.ParDo(FetchAccountsDoFn(my_variable))  # Fetch accounts data
+            | 'FetchAccounts' >> beam.ParDo(FetchAccountsDoFn())  # Fetch accounts data
             | 'WriteToBigQuery' >> WriteToBigQuery(
                 table_spec,
                 schema=schema,
