@@ -77,7 +77,7 @@ def updated_bq_cur_table(task_id,table_name):
     # SQL for the MERGE query
     MERGE_QUERY = """
 MERGE `searce-dna-ps1-delivery.recurly_curated.accounts` AS target
-USING `searce-dna-ps1-delivery.recurly_raw.accounts_new` AS source
+USING `searce-dna-ps1-delivery.recurly_raw.accounts_raw` AS source
 ON target.id = source.id
 WHEN MATCHED AND source.updated_at > target.updated_at THEN
   UPDATE SET
