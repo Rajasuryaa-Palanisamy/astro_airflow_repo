@@ -38,7 +38,7 @@ PROJECT_ID = "searce-dna-ps1-delivery"
 # DATASET_RAW = Variable.get("GCP_BQ_DATASET_RAW")
 DATASET_RAW = "recurly_raw"
 # DATASET_RPT = Variable.get("GCP_BQ_DATASET_RPT")
-DATASET_RPT = "recurly_cur"
+DATASET_RPT = "recurly_curated"
 
 def set_max_date(dag,project_id,dataset,bigquery_table_name, bq_table_cdc_column_name):
     client = bigquery.Client(project= project_id)
