@@ -80,7 +80,7 @@ def dataflow_job(source_table_name, src_table_cdc_column_name):
 def bq_merge_query(table_name):
     # client = storage.Client()
     # bucket = client.get_bucket(BUCKET)
-    file_path = '/Users/rajasuryaapalanisamy/astro-project/dags/merge_' + table_name + '.sql'
+    file_path = '$AIRFLOW_HOME/include/merge_' + table_name + '.sql'
     with open(file_path, 'r') as file:
         sql_query = file.read()
     # blob = bucket.blob(file_path)
@@ -138,7 +138,7 @@ with models.DAG(
     tsk_aira_dfj_src_salesforce_product22bqraw =  dataflow_job("product2","SystemModstamp")
 
     
-    tsk_aira_bqcur_upsert_account_contact_relation = updated_bq_cur_table("merge_query_job_account_contact_relation","account_contact_relation")
+    tsk_aira_bqcur_upsert_account_contact_relation = updated_bq_cur_table("merge_query_job_account_contact_relation","account_contact_relation2")
     tsk_aira_bqcur_upsert_account = updated_bq_cur_table("merge_query_job_account","account")
     # tsk_aira_bqcur_upsert_account_contact_role = updated_bq_cur_table("merge_query_job_account_contact_role","account_contact_role")
     tsk_aira_bqcur_upsert_user = updated_bq_cur_table("merge_query_job_user","user")
