@@ -6,7 +6,7 @@ import os
 # Function to read the SQL file
 def read_sql_file():
     # Construct the path to the SQL file using os.path.join
-    file_path = os.path.join(os.environ['AIRFLOW_HOME'], 'include', 'merge_account_contact_relation2.sql')
+    file_path = os.path.join(os.environ['AIRFLOW_HOME'], 'include', 'merge_account_contact_relation.sql')
 
     # Ensure the file path is correct
     print(f"Looking for SQL file at: {file_path}")
