@@ -95,7 +95,7 @@ def updated_bq_cur_table(task_id,table_name):
     MERGE_QUERY = bq_merge_query(table_name)
 
     merge_query_job = BigQueryInsertJobOperator(
-        task_id='merge_query_job',
+        task_id=task_id,
         configuration={
             "query": {
                 "query": MERGE_QUERY,
