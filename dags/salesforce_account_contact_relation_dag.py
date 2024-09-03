@@ -71,39 +71,28 @@ def dataflow_job(source_table_name, src_table_cdc_column_name):
     run_df_job = BashOperator(
     task_id='aira_dfj_salesforce2bqraw_account_contact_relation',
     #$AIRFLOW_HOME/include/my_bash_script.sh
-    bash_command='python3 $AIRFLOW_HOME/include/salesforce_to_bq_account_contact_relation_df.py "{}" \   --requirements_file="$AIRFLOW_HOME/include/requirements.txt"'.format(max_date) ,
+    bash_command='python3 $AIRFLOW_HOME/include/salesforce_to_bq_{}_df.py "{}" \   --requirements_file="$AIRFLOW_HOME/include/requirements.txt"'.format(source_table_name,max_date) ,
     dag=dag
     )
     return run_df_job
+
+
+def bq_merge_query(table_name):
+    # client = storage.Client()
+    # bucket = client.get_bucket(BUCKET)
+    file_path = '$AIRFLOW_HOME/include/merge_' + table_name + '.sql'
+    with open(file_path, 'r') as file:
+        sql_query = file.read()
+    # blob = bucket.blob(file_path)
+    # query = blob.download_as_text()
+
+    return sql_query
 
 def updated_bq_cur_table(task_id,table_name):
     # BigQueryInsertJobOperator to run the MERGE query
 
     # SQL for the MERGE query
-    MERGE_QUERY = """
-    MERGE `searce-dna-ps1-delivery.salesforce_curated.account_contact_relation` AS target
-USING `searce-dna-ps1-delivery.salesforce_raw.raw_account_contact_relation` AS source
-ON target.id = source.id
-WHEN MATCHED AND source.SystemModstamp > target.SystemModstamp THEN
-  UPDATE SET
-target.Id	= source.Id,
-target.AccountId	= source.AccountId,
-target.ContactId	= source.ContactId,
-target.CreatedById	= source.CreatedById,
-target.CreatedDate	= source.CreatedDate,
-target.EndDate	= source.EndDate,
-target.IsActive	= source.IsActive,
-target.IsDeleted	= source.IsDeleted,
-target.IsDirect	= source.IsDirect,
-target.LastModifiedById	= source.LastModifiedById,
-target.LastModifiedDate	= source.LastModifiedDate,
-target.Relationship_Strength__c	= source.Relationship_Strength__c,
-target.Roles	= source.Roles,
-target.StartDate	= source.StartDate,
-target.SystemModstamp	= source.SystemModstamp
-WHEN NOT MATCHED THEN
-  INSERT ROW
-    """
+    MERGE_QUERY = bq_merge_query(table_name)
 
     merge_query_job = BigQueryInsertJobOperator(
         task_id='merge_query_job',
@@ -127,7 +116,7 @@ default_args = {
 }
 
 with models.DAG(
-    'dag-salesforce-account_contact_relation2bqraw-bash',
+    'dag-salesforce-2bqraw-bash',
     start_date= days_ago(1),
     schedule_interval=None, 
     catchup=False,
@@ -139,12 +128,41 @@ with models.DAG(
     
     tsk_aira_src_salesforce2bqraw_dataload_start = DummyOperator(task_id="aira_src_salesforce2bqraw_dataload_start",trigger_rule="all_success")
 
-    tsk_aira_dfj_src_salesforce2bqraw =  dataflow_job("account_contact_relation","SystemModstamp")
-    
-    tsk_aira_bqcur_upsert_table = updated_bq_cur_table("merge_query_job","account_contact_relation")
+    tsk_aira_dfj_src_salesforce_accountcontactrelation2bqraw =  dataflow_job("account_contact_relation","SystemModstamp")
+    tsk_aira_dfj_src_salesforce_account2bqraw =  dataflow_job("account","SystemModstamp")
+    # tsk_aira_dfj_src_salesforce_accountcontactrole2bqraw =  dataflow_job("account_contact_role","SystemModstamp")
+    tsk_aira_dfj_src_salesforce_user2bqraw =  dataflow_job("user","SystemModstamp")
+    tsk_aira_dfj_src_salesforce_opportunity2bqraw =  dataflow_job("opportunity","SystemModstamp")
+    # tsk_aira_dfj_src_salesforce_usage_c2bqraw =  dataflow_job("usage_c","SystemModstamp")
+    tsk_aira_dfj_src_salesforce_contact2bqraw =  dataflow_job("contact","SystemModstamp")
+    tsk_aira_dfj_src_salesforce_product22bqraw =  dataflow_job("product2","SystemModstamp")
 
-    tsk_aira_bq_set_max_date_account = PythonOperator(task_id="set_max_date_account",python_callable=set_max_date,op_kwargs={'project_id':PROJECT_ID,'dataset':DATASET_RAW,'bigquery_table_name':'account_contact_relation','bq_table_cdc_column_name':"SystemModstamp",'dag':dag},provide_context=True,trigger_rule = 'all_done',dag=dag)
+    
+    tsk_aira_bqcur_upsert_account_contact_relation = updated_bq_cur_table("merge_query_job_account_contact_relation","account_contact_relation")
+    tsk_aira_bqcur_upsert_account = updated_bq_cur_table("merge_query_job_account","account")
+    # tsk_aira_bqcur_upsert_account_contact_role = updated_bq_cur_table("merge_query_job_account_contact_role","account_contact_role")
+    tsk_aira_bqcur_upsert_user = updated_bq_cur_table("merge_query_job_user","user")
+    tsk_aira_bqcur_upsert_opportunity = updated_bq_cur_table("merge_query_job_opportunity","opportunity")
+    # tsk_aira_bqcur_upsert_usage_c = updated_bq_cur_table("merge_query_job_usage_c","usage_c")
+    tsk_aira_bqcur_upsert_contact = updated_bq_cur_table("merge_query_job_contact","contact")
+    tsk_aira_bqcur_upsert_product2 = updated_bq_cur_table("merge_query_job_product2","product2")
+
+    tsk_aira_bq_set_max_date_account_contact_relation = PythonOperator(task_id="set_max_date_account_contact_relation",python_callable=set_max_date,op_kwargs={'project_id':PROJECT_ID,'dataset':DATASET_RAW,'bigquery_table_name':'account_contact_relation','bq_table_cdc_column_name':"SystemModstamp",'dag':dag},provide_context=True,trigger_rule = 'all_done',dag=dag)
+    tsk_aira_bq_set_max_date_account = PythonOperator(task_id="set_max_date_account",python_callable=set_max_date,op_kwargs={'project_id':PROJECT_ID,'dataset':DATASET_RAW,'bigquery_table_name':'account','bq_table_cdc_column_name':"SystemModstamp",'dag':dag},provide_context=True,trigger_rule = 'all_done',dag=dag)
+    # tsk_aira_bq_set_max_date_account_contact_role = PythonOperator(task_id="set_max_date_account_contact_role",python_callable=set_max_date,op_kwargs={'project_id':PROJECT_ID,'dataset':DATASET_RAW,'bigquery_table_name':'account_contact_role','bq_table_cdc_column_name':"SystemModstamp",'dag':dag},provide_context=True,trigger_rule = 'all_done',dag=dag)
+    tsk_aira_bq_set_max_date_user = PythonOperator(task_id="set_max_date_user",python_callable=set_max_date,op_kwargs={'project_id':PROJECT_ID,'dataset':DATASET_RAW,'bigquery_table_name':'user','bq_table_cdc_column_name':"SystemModstamp",'dag':dag},provide_context=True,trigger_rule = 'all_done',dag=dag)
+    tsk_aira_bq_set_max_date_opportunity = PythonOperator(task_id="set_max_date_opportunity",python_callable=set_max_date,op_kwargs={'project_id':PROJECT_ID,'dataset':DATASET_RAW,'bigquery_table_name':'opportunity','bq_table_cdc_column_name':"SystemModstamp",'dag':dag},provide_context=True,trigger_rule = 'all_done',dag=dag)
+    # tsk_aira_bq_set_max_date_usage_c = PythonOperator(task_id="set_max_date_usage_c",python_callable=set_max_date,op_kwargs={'project_id':PROJECT_ID,'dataset':DATASET_RAW,'bigquery_table_name':'usage_c','bq_table_cdc_column_name':"SystemModstamp",'dag':dag},provide_context=True,trigger_rule = 'all_done',dag=dag)
+    tsk_aira_bq_set_max_date_contact = PythonOperator(task_id="set_max_date_contact",python_callable=set_max_date,op_kwargs={'project_id':PROJECT_ID,'dataset':DATASET_RAW,'bigquery_table_name':'contact','bq_table_cdc_column_name':"SystemModstamp",'dag':dag},provide_context=True,trigger_rule = 'all_done',dag=dag)
+    tsk_aira_bq_set_max_date_product2 = PythonOperator(task_id="set_max_date_product2",python_callable=set_max_date,op_kwargs={'project_id':PROJECT_ID,'dataset':DATASET_RAW,'bigquery_table_name':'product2','bq_table_cdc_column_name':"SystemModstamp",'dag':dag},provide_context=True,trigger_rule = 'all_done',dag=dag)
 
     tsk_aira_src_salesforce2bqraw_dataload_end = DummyOperator(task_id="aira_src_salesforce2bqraw_dataload_end",trigger_rule="all_success")
 
-    tsk_aira_src_salesforce2bqraw_dataload_start >> tsk_aira_dfj_src_salesforce2bqraw >> tsk_aira_bqcur_upsert_table >> tsk_aira_bq_set_max_date_account >> tsk_aira_src_salesforce2bqraw_dataload_end
+    tsk_aira_src_salesforce2bqraw_dataload_start >> tsk_aira_dfj_src_salesforce_accountcontactrelation2bqraw >> tsk_aira_bqcur_upsert_account_contact_relation >> tsk_aira_bq_set_max_date_account_contact_relation >> tsk_aira_src_salesforce2bqraw_dataload_end
+    tsk_aira_src_salesforce2bqraw_dataload_start >> tsk_aira_dfj_src_salesforce_account2bqraw >> tsk_aira_bqcur_upsert_account >> tsk_aira_bq_set_max_date_account >> tsk_aira_src_salesforce2bqraw_dataload_end
+    # tsk_aira_src_salesforce2bqraw_dataload_start >> tsk_aira_dfj_src_salesforce_accountcontactrole2bqraw >> tsk_aira_bqcur_upsert_account_contact_role >> tsk_aira_bq_set_max_date_account_contact_role >> tsk_aira_src_salesforce2bqraw_dataload_end
+    tsk_aira_src_salesforce2bqraw_dataload_start >> tsk_aira_dfj_src_salesforce_user2bqraw >> tsk_aira_bqcur_upsert_user >> tsk_aira_bq_set_max_date_user >> tsk_aira_src_salesforce2bqraw_dataload_end
+    tsk_aira_src_salesforce2bqraw_dataload_start >> tsk_aira_dfj_src_salesforce_opportunity2bqraw >> tsk_aira_bqcur_upsert_opportunity >> tsk_aira_bq_set_max_date_opportunity >> tsk_aira_src_salesforce2bqraw_dataload_end
+    # tsk_aira_src_salesforce2bqraw_dataload_start >> tsk_aira_dfj_src_salesforce_usage_c2bqraw >> tsk_aira_bqcur_upsert_usage_c >> tsk_aira_bq_set_max_date_usage_c >> tsk_aira_src_salesforce2bqraw_dataload_end
+    tsk_aira_src_salesforce2bqraw_dataload_start >> tsk_aira_dfj_src_salesforce_contact2bqraw >> tsk_aira_bqcur_upsert_contact >> tsk_aira_bq_set_max_date_contact >> tsk_aira_src_salesforce2bqraw_dataload_end
+    tsk_aira_src_salesforce2bqraw_dataload_start >> tsk_aira_dfj_src_salesforce_product22bqraw >> tsk_aira_bqcur_upsert_product2 >> tsk_aira_bq_set_max_date_product2 >> tsk_aira_src_salesforce2bqraw_dataload_end
