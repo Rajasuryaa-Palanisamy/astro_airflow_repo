@@ -80,7 +80,7 @@ def dataflow_job(source_table_name, src_table_cdc_column_name):
 def bq_merge_query(table_name):
     # client = storage.Client()
     # bucket = client.get_bucket(BUCKET)
-    file_path = '/Users/rajasuryaapalanisamy/astro-project/include/merge_' + table_name + '.sql'
+    file_path = '/Users/rajasuryaapalanisamy/astro-project/dags/merge_' + table_name + '.sql'
     with open(file_path, 'r') as file:
         sql_query = file.read()
     # blob = bucket.blob(file_path)
