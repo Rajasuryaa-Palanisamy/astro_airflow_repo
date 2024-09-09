@@ -14,7 +14,8 @@ default_args = {
 def fetch_and_print_data(**kwargs):
     # Initialize the CloudSQLHook
     cloud_sql_hook = CloudSQLHook(
-        sql_conn_id='gcp_mysql_connid',
+        default_conn_name='gcp_mysql_connid',
+        #sql_conn_id='gcp_mysql_connid',
         api_version='v1beta1',          # Your Cloud SQL connection ID
     )
     
