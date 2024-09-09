@@ -3,6 +3,7 @@ from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 from airflow.utils.dates import days_ago
 from datetime import timedelta
 import logging
+from airflow.operators.python import PythonOperator
 
 default_args = {
     'owner': 'airflow',
