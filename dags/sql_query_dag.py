@@ -23,7 +23,7 @@ with DAG(
     query_task = SQLExecuteQueryOperator(
         task_id='execute_mysql_query',
         sql='SELECT * FROM employees;',
-        mysql_conn_id='mysql_default',
+        conn_id='mysql_default',
     )
 
     query_task
