@@ -19,6 +19,7 @@ default_args = {
 
 export_body = {
   "exportContext": {
+      "databases": ["airbytetesting"],
     "kind": "sql#exportContext",
     "fileType": "csv",
     "uri": "gs://mssql-bq-acc/dag_export.csv",
