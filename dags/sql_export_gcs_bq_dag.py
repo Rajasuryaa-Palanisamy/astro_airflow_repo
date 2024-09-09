@@ -21,7 +21,7 @@ export_body = {
   "exportContext": {
     "kind": "sql#exportContext",
     "fileType": "csv",
-    "uri": "mssql-bq-acc/dag_export.csv",
+    "uri": "gs://mssql-bq-acc/dag_export.csv",
     "csvExportOptions": {
       "selectQuery": "select * from employees;"
     }
