@@ -17,7 +17,7 @@ def fetch_and_print_data(**kwargs):
         #default_conn_name='gcp_mysql_connid',
         gcp_conn_id='gcp_mysql_connid',
         #sql_conn_id='gcp_mysql_connid',
-        api_version='v1beta1',          # Your Cloud SQL connection ID
+        api_version='v1',          # Your Cloud SQL connection ID
     )
     
     # Fetch data from Cloud SQL
