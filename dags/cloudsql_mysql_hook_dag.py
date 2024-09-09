@@ -7,8 +7,7 @@ import logging
 # Define default arguments for the DAG
 default_args = {
     'owner': 'airflow',
-    'start_date': days_ago(1),
-    'retries': 1,
+    'start_date': days_ago(1)
 }
 
 # Function to fetch and print data using CloudSQLHook
