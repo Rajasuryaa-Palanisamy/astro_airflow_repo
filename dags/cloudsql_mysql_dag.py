@@ -31,7 +31,7 @@ def print_query_results(**kwargs):
 
 # Define the DAG
 with DAG(
-    dag_id='cloudsql_mysql_execute_query',
+    dag_id='cloudsql_mysql_execute_query_print',
     default_args=default_args,
     schedule_interval='@daily',  # Adjust the schedule as needed
     catchup=False,
