@@ -1,6 +1,12 @@
 from airflow import DAG
-from airflow.providers.google.cloud.operators.cloud_sql import CloudSQLExecuteQueryOperator
 from airflow.utils.dates import days_ago
+from airflow.providers.google.cloud.operators.cloud_sql import (
+    CloudSQLCreateInstanceDatabaseOperator,
+    CloudSQLCreateInstanceOperator,
+    CloudSQLDeleteInstanceOperator,
+    CloudSQLExecuteQueryOperator,
+)
+
 
 # Define default arguments for the DAG
 default_args = {
