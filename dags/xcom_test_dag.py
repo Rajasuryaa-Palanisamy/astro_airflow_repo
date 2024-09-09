@@ -22,6 +22,7 @@ with DAG(
     start_date=datetime(2023, 2, 27),
     schedule=timedelta(minutes=5),
 ) as dag:
+    
     generate_random_number = PythonOperator(
         task_id="generate_random_number", python_callable=generate_random_number
     )

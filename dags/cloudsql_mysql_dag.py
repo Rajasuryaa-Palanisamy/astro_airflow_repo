@@ -57,7 +57,3 @@ with DAG(
 
     # Define task dependencies
     execute_query >> print_results
-
-    # If needed, you can add more tasks or further data processing steps here.
-
-    execute_query
