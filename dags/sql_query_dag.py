@@ -1,5 +1,5 @@
 from airflow import DAG
-from airflow.operators.sql import SQLExecuteQueryOperator
+from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 from airflow.utils.dates import days_ago
 from datetime import timedelta
 
