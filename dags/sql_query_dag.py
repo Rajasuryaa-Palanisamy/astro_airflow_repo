@@ -12,7 +12,7 @@ default_args = {
 }
 
 with DAG(
-    'example_mysql_dag',
+    'mysql_dag',
     default_args=default_args,
     description='A simple DAG to query MySQL',
     schedule_interval=None,
