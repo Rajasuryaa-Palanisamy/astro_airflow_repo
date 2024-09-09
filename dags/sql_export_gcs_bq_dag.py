@@ -7,6 +7,7 @@ from airflow.utils.dates import days_ago
 from datetime import timedelta
 import logging
 from airflow.operators.python import PythonOperator
+from airflow.contrib.operators.gcs_to_bq import GoogleCloudStorageToBigQueryOperator
 
 
 default_args = {
@@ -29,6 +30,24 @@ export_body = {
   }
 }
 
+def bq_load(dag,task_id,destination_project_dataset_table):
+    bqload = GoogleCloudStorageToBigQueryOperator(
+        task_id = task_id,
+        bucket="mssql-bq-acc",
+        destination_project_dataset_table = destination_project_dataset_table, 
+        create_disposition='CREATE_IF_NEEDED',
+        #schema_object=schema_object,
+        source_format='csv',
+        field_delimiter=',' ,
+        allow_quoted_newlines=True,
+        allow_jagged_rows=True,
+        autodetect=False,
+        source_objects=['dag_export.csv'],
+        write_disposition='WRITE_APPEND',
+        skip_leading_rows=0,
+        dag=dag)   
+    return bqload
+
 with DAG(
     'sql_export_gcs_bq',
     default_args=default_args,
@@ -42,4 +61,7 @@ with DAG(
                                                      project_id="searce-dna-ps1-delivery",
                                                      instance='airbytepoc',
                                                      task_id='sql_export_task')
-    sql_export_task
+    
+    gcs_to_bq = bq_load(dag,"gcsraw2bqraw",'searce-dna-ps1-delivery.aira_mysql_raw.employees')
+
+    sql_export_task >> gcs_to_bq
