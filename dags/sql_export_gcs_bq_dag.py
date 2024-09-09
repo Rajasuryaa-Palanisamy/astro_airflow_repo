@@ -36,7 +36,7 @@ def bq_load(dag,task_id,destination_project_dataset_table):
         bucket="mssql-bq-acc",
         destination_project_dataset_table = destination_project_dataset_table, 
         create_disposition='CREATE_IF_NEEDED',
-        #schema_object=schema_object,
+        schema_object='employees.json',
         source_format='csv',
         field_delimiter=',' ,
         allow_quoted_newlines=True,
