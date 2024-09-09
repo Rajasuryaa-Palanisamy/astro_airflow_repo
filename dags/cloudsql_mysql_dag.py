@@ -11,8 +11,7 @@ from airflow.providers.google.cloud.operators.cloud_sql import (
 # Define default arguments for the DAG
 default_args = {
     'owner': 'airflow',
-    'start_date': days_ago(1),
-    'retries': 1,
+    'start_date': days_ago(1)
 }
 
 # Define the DAG
