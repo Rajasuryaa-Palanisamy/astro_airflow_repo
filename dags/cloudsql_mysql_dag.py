@@ -28,7 +28,7 @@ def print_query_results(**kwargs):
             logging.info(row)
     else:
         logging.info("No results found or query failed.")
-        
+
 # Define the DAG
 with DAG(
     dag_id='cloudsql_mysql_execute_query',
@@ -57,7 +57,6 @@ with DAG(
 
     # Define task dependencies
     execute_query >> print_results
-    )
 
     # If needed, you can add more tasks or further data processing steps here.
 
