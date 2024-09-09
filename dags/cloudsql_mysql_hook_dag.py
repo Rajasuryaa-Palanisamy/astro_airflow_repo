@@ -3,6 +3,8 @@ from airflow.providers.google.cloud.hooks.cloud_sql import CloudSQLHook
 from airflow.operators.python import PythonOperator
 from airflow.utils.dates import days_ago
 import logging
+import mysql.connector
+from mysql.connector import Error
 
 # Define default arguments for the DAG
 default_args = {
@@ -20,28 +22,44 @@ def fetch_and_print_data(**kwargs):
         api_version='v1',          # Your Cloud SQL connection ID
     )
     
-    # Fetch data from Cloud SQL
-    sql_query = "SELECT * FROM airbytetesting.employees;"  # Your SQL query
-    conn = cloud_sql_hook.get_conn()
-    cursor = conn.cursor()
-    cursor.execute(sql_query)
+# Retrieve connection information
+    cloud_sql_conn = cloud_sql_hook.get_conn()
+    connection_config = {
+        'host': cloud_sql_conn.host,
+        'user': cloud_sql_conn.user,
+        'password': cloud_sql_conn.password,
+        'database': 'airbytetesting',  # Your database name
+    }
+
+    try:
+        # Create a new MySQL connection
+        conn = mysql.connector.connect(**connection_config)
+        cursor = conn.cursor()
+        
+        # Execute SQL query
+        sql_query = "SELECT * FROM employees;"  # Your SQL query
+        cursor.execute(sql_query)
+        
+        # Fetch all results
+        rows = cursor.fetchall()
+        column_names = [desc[0] for desc in cursor.description]
+        
+        # Print the results to Airflow logs
+        if rows:
+            logging.info("Query Results:")
+            logging.info(f"Column Names: {column_names}")
+            for row in rows:
+                logging.info(row)
+        else:
+            logging.info("No results found or query failed.")
     
-    # Fetch all results
-    rows = cursor.fetchall()
-    column_names = [desc[0] for desc in cursor.description]
+    except Error as e:
+        logging.error(f"Error: {e}")
     
-    # Print the results to Airflow logs
-    if rows:
-        logging.info("Query Results:")
-        logging.info(f"Column Names: {column_names}")
-        for row in rows:
-            logging.info(row)
-    else:
-        logging.info("No results found or query failed.")
-    
-    # Close the cursor and connection
-    cursor.close()
-    conn.close()
+    finally:
+        if conn.is_connected():
+            cursor.close()
+            conn.close()
 
 # Define the DAG
 with DAG(
