@@ -24,7 +24,8 @@ with DAG(
         task_id='execute_mysql_query',
         sql='SELECT * FROM employees;',
         conn_id='mysql_default',
-        return_last=True
+        return_last=True,
+        show_return_value_in_logs=True
     )
 
     query_task
