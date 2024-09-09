@@ -30,8 +30,7 @@ with DAG(
         gcp_cloudsql_conn_id='gcp_mysql_connid',  # Connection ID for Google Cloud
         sql=[
             "SELECT * FROM airbytetesting.employees;"  # Example SQL query
-        ],
-        location='us-central1-a'
+        ]
     )
 
     # If needed, you can add more tasks or further data processing steps here.
